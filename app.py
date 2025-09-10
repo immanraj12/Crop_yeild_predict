@@ -14,6 +14,11 @@ with open('crop_model.pkl', 'rb') as file:
 with open('scaler.pkl', 'rb') as file:
     scaler = pickle.load(file)
 
+
+# Load the training columns
+with open('X_columns.pkl', 'rb') as f:
+    X_columns = pickle.load(f)
+
 # Title of the app
 st.title("🌱 Crop Yield Prediction App")
 
@@ -32,6 +37,10 @@ if st.button("Predict"):
     input_data = pd.DataFrame([[rainfall, temperature, days_to_harvest]],
                               columns=['Rainfall_mm', 'Temperature_Celsius', 'Days_to_Harvest'])
     
+
+    # Ensure the input data has the same columns as the training data
+    input_data = input_data.reindex(columns=X_columns, fill_value=0)
+
     # Scale the data
     input_scaled = scaler.transform(input_data)
     
