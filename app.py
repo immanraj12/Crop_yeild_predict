@@ -14,7 +14,6 @@ with open('crop_model.pkl', 'rb') as file:
 with open('scaler.pkl', 'rb') as file:
     scaler = pickle.load(file)
 
-
 # Load the training columns
 with open('X_columns.pkl', 'rb') as f:
     X_columns = pickle.load(f)
@@ -30,19 +29,24 @@ Enter the agricultural data below to predict the expected yield per hectare.
 rainfall = st.number_input("Rainfall (mm)", min_value=0.0, value=50.0)
 temperature = st.number_input("Temperature (°C)", min_value=-10.0, max_value=50.0, value=25.0)
 days_to_harvest = st.number_input("Days to Harvest", min_value=1, value=100)
+fertilizer = st.number_input("Fertilizer Used (kg/ha)", min_value=0.0, value=100.0)
+irrigation = st.number_input("Irrigation Used (mm)", min_value=0.0, value=50.0)
 
 # Prediction button
 if st.button("Predict"):
     # Prepare the input data
-    input_data = pd.DataFrame([[rainfall, temperature, days_to_harvest]],
-                              columns=['Rainfall_mm', 'Temperature_Celsius', 'Days_to_Harvest'])
-    
+    input_data = pd.DataFrame([[rainfall, temperature, days_to_harvest, fertilizer, irrigation]],
+                              columns=['Rainfall_mm', 'Temperature_Celsius', 'Days_to_Harvest', 'Fertilizer_Used', 'Irrigation_Used'])
 
     # Ensure the input data has the same columns as the training data
     input_data = input_data.reindex(columns=X_columns, fill_value=0)
 
     # Scale the data
     input_scaled = scaler.transform(input_data)
+
+    # Display scaled data for debugging
+    st.write("### Scaled Input Data")
+    st.write(input_scaled)  
     
     # Make prediction
     prediction = model.predict(input_scaled)
@@ -53,4 +57,4 @@ if st.button("Predict"):
     # Optional: Show more details
     st.write("### Input Data")
     st.write(input_data)
-  
+   
